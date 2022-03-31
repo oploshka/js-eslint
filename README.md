@@ -24,7 +24,7 @@ module.exports = {
   'extends': [
     // ...
     'plugin:oploshka/recommended',
-    'plugin:oploshka/override-jest-test',
+    'plugin:oploshka/overrides-test-jest',
   ],
   globals: {
     // ...
