@@ -9,12 +9,7 @@ node_modules
 /.gitkeep
 __*
 
-/tests/e2e/videos/
-/tests/e2e/screenshots/
-
-
 # local env files
-.env
 .env.local
 .env.*.local
 
