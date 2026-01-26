@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-oploshka",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "my eslint project settings",
   "keywords": [
     "eslint",
@@ -10,11 +10,13 @@
   "author": "Andrey Tyurin <ectb08@mail.ru>",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "9.39.2",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "@vue/eslint-config-typescript": "^14.6.0",
-    "eslint": "^9.38.0",
-    "eslint-plugin-vue": "^10.5.1",
-    "globals": "^16.4.0"
+    "eslint": "9.39.2",
+    "eslint-plugin-vue": "10.7.0",
+    "globals": "16.5.0",
+    "typescript-eslint": "8.54.0"
   }
 }
