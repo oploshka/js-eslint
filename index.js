@@ -60,6 +60,7 @@ import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescrip
 // export default typescriptEslint.config(
 export default defineConfig([
   {
+    name: 'oploshka/ignores',
     ignores: [
       '**/*.d.ts',
       '**/coverage/**',
@@ -71,6 +72,7 @@ export default defineConfig([
 
   // Базовый JavaScript-конфиг.
   {
+    name: 'oploshka/javascript',
     files: ['**/*.{js,mjs,cjs,jsx}'],
     extends: [eslintPluginJs.configs.recommended],
     languageOptions: {
@@ -86,6 +88,7 @@ export default defineConfig([
   // TypeScript-конфиг. Начиная с ESLint 10 используем стандартный defineConfig + extends,
   // а не deprecated helper typescriptEslint.config().
   {
+    name: 'oploshka/typescript',
     files: ['**/*.{ts,mts,cts,tsx}'],
     extends: [
       eslintPluginJs.configs.recommended,
@@ -165,6 +168,7 @@ export default defineConfig([
   //   },
   // }
   {
+    name: 'oploshka/imports',
     files: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
     extends: [
       // 'import-x/flat/recommended'
@@ -189,6 +193,7 @@ export default defineConfig([
 
   // Пример правила, специфичного для Vue
   {
+    name: 'oploshka/vue',
     files: ['**/*.vue'],
     extends: [
       eslintPluginJs.configs.recommended,
