@@ -218,6 +218,9 @@ export default defineConfig([
       },
     },
     plugins: {
+      // Регистрируем Vue явно: локальные vue/* rules находятся в этом же config block.
+      // Не полагаемся на регистрацию плагина внутри extended flat/recommended.
+      vue: eslintPluginVue,
       // Нужен для правил TypeScript, которые применяются к содержимому <script> в .vue.
       '@typescript-eslint': typescriptEslintPlugin,
     },
