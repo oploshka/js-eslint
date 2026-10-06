@@ -198,6 +198,9 @@ export default defineConfig([
     extends: [
       eslintPluginJs.configs.recommended,
       eslintPluginVue.configs['flat/recommended'],
+      // eslintPluginVue.configs['base'],
+      // importPluginX.flatConfigs.recommended,
+      // importPluginX.flatConfigs.typescript,
     ],
     languageOptions: {
       ecmaVersion: 'latest',
@@ -215,6 +218,8 @@ export default defineConfig([
       '@typescript-eslint': typescriptEslint.plugin,
     },
     rules: {
+      // ... другие правила для Vue
+
       // Сохраняем поведение старого shared config: эти проверки были отключены и для .vue.
       'no-undef': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
