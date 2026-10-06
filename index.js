@@ -33,7 +33,11 @@ import { defineConfig } from 'eslint/config';
 import eslintPluginJs from '@eslint/js';
 import eslintPluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
-import typescriptEslint from 'typescript-eslint';
+import {
+  configs as typescriptEslintConfigs,
+  parser as typescriptEslintParser,
+  plugin as typescriptEslintPlugin,
+} from 'typescript-eslint';
 //
 // import importPlugin from 'eslint-plugin-import';
 // import importPluginX from "eslint-plugin-import-x";
@@ -92,7 +96,7 @@ export default defineConfig([
     files: ['**/*.{ts,mts,cts,tsx}'],
     extends: [
       eslintPluginJs.configs.recommended,
-      typescriptEslint.configs.recommended,
+      typescriptEslintConfigs.recommended,
     ],
     languageOptions: {
       ecmaVersion: 'latest',
@@ -209,13 +213,13 @@ export default defineConfig([
       parserOptions: {
         // vue-eslint-parser остаётся верхнеуровневым parser из eslint-plugin-vue,
         // а TypeScript parser используется внутри <script lang="ts">.
-        parser: typescriptEslint.parser,
+        parser: typescriptEslintParser,
         extraFileExtensions: ['.vue'],
       },
     },
     plugins: {
       // Нужен для правил TypeScript, которые применяются к содержимому <script> в .vue.
-      '@typescript-eslint': typescriptEslint.plugin,
+      '@typescript-eslint': typescriptEslintPlugin,
     },
     rules: {
       // ... другие правила для Vue
