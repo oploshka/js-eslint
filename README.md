@@ -329,17 +329,77 @@ ViewDateTime_                 error
 - DEVELOP — off;
 - PROD — warn.
 
-### Inline content
+### Расположение содержимого внутри тегов
 
-Для короткого inline-content разрешены часто используемые HTML-теги, включая `div`.
+`vue/singleline-html-element-content-newline` и `vue/multiline-html-element-content-newline` отключены полностью.
 
-Например:
+Проект не считает перенос содержимого между opening и closing tag обязательным стилевым соглашением.
+
+Например, допустимы:
 
 ```vue
 <div @click="runWorker">testWorker</div>
+
+<text v-bind="svgIconParams" class="svg-file-text">{{ type }}</text>
 ```
 
-не должен требовать искусственного переноса текста только из-за наличия атрибута.
+и многострочный вариант, если он лучше читается в конкретном месте.
+
+### Обязательные style-соглашения: warning в обоих режимах
+
+Некоторые правила являются не runtime errors, а осознанными соглашениями проекта. Они остаются `warn` и в DEVELOP, и в PROD, чтобы новый stylistic debt не появлялся незаметно.
+
+Для многострочного opening tag закрывающая скобка должна находиться на отдельной строке:
+
+```vue
+<!-- warning -->
+<Component
+  foo="1"
+  bar="2">
+
+<!-- OK -->
+<Component
+  foo="1"
+  bar="2"
+>
+```
+
+Настройка:
+
+```js
+'vue/html-closing-bracket-newline': ['warn', {
+  singleline: 'never',
+  multiline: 'always',
+  selfClosingTag: {
+    singleline: 'never',
+    multiline: 'always',
+  },
+}],
+```
+
+Также в проекте обязательны Vue directive shorthands:
+
+```vue
+<!-- warning -->
+<Component v-bind:foo="foo" />
+<Component v-on:click="run" />
+<template v-slot:item>
+
+<!-- OK -->
+<Component :foo="foo" />
+<Component @click="run" />
+<template #item>
+```
+
+Соответствующие правила всегда работают как warning:
+
+```js
+'vue/v-bind-style': ['warn', 'shorthand'],
+'vue/v-on-style': ['warn', 'shorthand'],
+'vue/v-slot-style': ['warn', 'shorthand'],
+```
+
+Здесь `warn` означает: код остаётся рабочим, но форма записи не соответствует принятому соглашению проекта и должна быть заметна уже во время разработки.
 
 ## Массовые autofix-изменения
 
