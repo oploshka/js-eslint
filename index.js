@@ -524,8 +524,26 @@ export function createEslintConfig(mode = ESLINT_MODE.DEVELOP) {
       // Количество атрибутов на строке выбирается по читаемости.
       'vue/max-attributes-per-line': 'off',
 
-      // Перенос содержимого многострочных HTML-элементов — стилистика.
-      'vue/multiline-html-element-content-newline': migrationRule,
+      // Расположение содержимого внутри тега выбирается по читаемости.
+      'vue/singleline-html-element-content-newline': 'off',
+      'vue/multiline-html-element-content-newline': 'off',
+
+      // Если opening tag разбит на несколько строк, закрывающая скобка
+      // должна находиться на отдельной строке.
+      // Это соглашение проекта, поэтому warning показывается всегда.
+      'vue/html-closing-bracket-newline': ['warn', {
+        singleline: 'never',
+        multiline: 'always',
+        selfClosingTag: {
+          singleline: 'never',
+          multiline: 'always',
+        },
+      }],
+
+      // Shorthand — обязательное соглашение проекта.
+      'vue/v-bind-style': ['warn', 'shorthand'],
+      'vue/v-on-style': ['warn', 'shorthand'],
+      'vue/v-slot-style': ['warn', 'shorthand'],
 
       // Несколько пробелов могут использоваться для визуального выравнивания.
       'vue/no-multi-spaces': 'off',
