@@ -62,7 +62,38 @@ import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescrip
 
 // export default defineConfig(
 // export default typescriptEslint.config(
-export default defineConfig([
+export const ESLINT_MODE = Object.freeze({
+  DEVELOP: 'DEVELOP',
+  PROD: 'PROD',
+});
+
+export function createEslintConfig(mode = ESLINT_MODE.DEVELOP) {
+  if (!Object.values(ESLINT_MODE).includes(mode)) {
+    throw new Error(`Unknown ESLint mode: ${mode}`);
+  }
+
+  const isProd = mode === ESLINT_MODE.PROD;
+
+  // Некритичный legacy/migration debt:
+  // DEVELOP -> off
+  // PROD    -> warn
+  const migrationRule = isProd ? 'warn' : 'off';
+
+  const migrationRuleWithOptions = (options) => (
+    isProd ? ['warn', options] : 'off'
+  );
+
+  const banTsCommentRule = isProd
+    ? ['warn', {
+        'ts-ignore': true,
+        'ts-expect-error': 'allow-with-description',
+        'ts-check': false,
+        'ts-nocheck': true,
+        minimumDescriptionLength: 3,
+      }]
+    : 'off';
+
+  return defineConfig([
   {
     name: 'oploshka/ignores',
     ignores: [
@@ -235,7 +266,7 @@ export default defineConfig([
       //
       // https://github.com/vuejs/eslint-plugin-vue/blob/master/lib/rules/order-in-components.js
       //
-      "vue/order-in-components": ["warn", {
+      'vue/order-in-components': isProd ? ['warn', {
         "order": [
           // Side Effects (triggers effects outside the component)
           'el',
@@ -309,7 +340,7 @@ export default defineConfig([
           ['template', 'render'],
           'renderError'
         ]
-      }],
+      }] : 'off',
 
       // # Vue
       /**
@@ -346,7 +377,7 @@ export default defineConfig([
       'vue/singleline-html-element-content-newline': ['warn', {
         'ignoreWhenNoAttributes': true,
         'ignoreWhenEmpty': true,
-        'ignores': ['h1', 'h2', 'h3', 'span', 'p', 'button', 'pre', 'textarea'], // Список тегов, которые можно писать в одну строку
+        'ignores': ['h1', 'h2', 'h3', 'span', 'p', 'button', 'div', 'pre', 'textarea'], // Список тегов, которые можно писать в одну строку
       }],
 
       /**
@@ -434,8 +465,107 @@ export default defineConfig([
       // Отключаем ругание на наследование интерфейса без переопределения свойств
       '@typescript-eslint/no-empty-object-type': ['error', { 'allowInterfaces': 'with-single-extends' }],
     }
-  }
-]);
+  },
+
+  // Профиль DEVELOP / PROD применяется последним и поэтому переопределяет
+  // severity правил из recommended preset, не меняя correctness-проверки.
+  {
+    name: `oploshka/javascript-profile-${mode.toLowerCase()}`,
+    files: ['**/*.{js,mjs,cjs,jsx}'],
+    rules: {
+      'no-unused-vars': migrationRule,
+    },
+  },
+
+  {
+    name: `oploshka/typescript-profile-${mode.toLowerCase()}`,
+    files: ['**/*.{ts,mts,cts,tsx}'],
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': migrationRule,
+      '@typescript-eslint/no-explicit-any': migrationRule,
+      '@typescript-eslint/ban-ts-comment': banTsCommentRule,
+      '@typescript-eslint/no-unsafe-function-type': migrationRule,
+      '@typescript-eslint/no-namespace': migrationRule,
+      '@typescript-eslint/no-require-imports': migrationRule,
+      '@typescript-eslint/no-this-alias': migrationRule,
+      '@typescript-eslint/no-wrapper-object-types': migrationRule,
+      '@typescript-eslint/no-array-constructor': migrationRule,
+      '@typescript-eslint/no-unnecessary-type-constraint': migrationRule,
+      '@typescript-eslint/prefer-as-const': migrationRule,
+      '@typescript-eslint/prefer-namespace-keyword': migrationRule,
+      '@typescript-eslint/triple-slash-reference': migrationRule,
+      '@typescript-eslint/no-empty-object-type': migrationRuleWithOptions({
+        allowInterfaces: 'with-single-extends',
+      }),
+    },
+  },
+
+  {
+    name: `oploshka/vue-profile-${mode.toLowerCase()}`,
+    files: ['**/*.vue'],
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': migrationRule,
+      '@typescript-eslint/no-explicit-any': migrationRule,
+      '@typescript-eslint/ban-ts-comment': banTsCommentRule,
+      'vue/no-unused-vars': migrationRule,
+      'vue/no-unused-components': migrationRule,
+
+      // TODO eslint-plugin-oploshka:
+      // заменить на собственное правило, которое понимает "_" как
+      // смысловой разделитель PascalCase-сегментов.
+      'vue/component-definition-name-casing': 'off',
+      'vue/component-name-in-template-casing': 'off',
+
+      // Порядок атрибутов — style/migration debt.
+      'vue/attributes-order': migrationRule,
+
+      // Количество атрибутов на строке выбирается по читаемости.
+      'vue/max-attributes-per-line': 'off',
+
+      // Перенос содержимого многострочных HTML-элементов — стилистика.
+      'vue/multiline-html-element-content-newline': migrationRule,
+
+      // Несколько пробелов могут использоваться для визуального выравнивания.
+      'vue/no-multi-spaces': 'off',
+
+      // Пробелы внутри {{ }} не являются обязательным соглашением.
+      'vue/mustache-interpolation-spacing': 'off',
+
+      // Проект не навязывает единственный casing для template-атрибутов.
+      'vue/attribute-hyphenation': 'off',
+
+      // Native HTML сохраняет HTML-подобный синтаксис,
+      // Vue-компоненты без содержимого могут быть self-closing.
+      'vue/html-self-closing': migrationRuleWithOptions({
+        html: {
+          void: 'never',
+          normal: 'never',
+          component: 'always',
+        },
+        svg: 'always',
+        math: 'always',
+      }),
+    },
+  },
+
+  {
+    name: `oploshka/general-profile-${mode.toLowerCase()}`,
+    files: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
+    rules: {
+      'no-useless-assignment': migrationRule,
+      'no-unused-private-class-members': migrationRule,
+      'no-debugger': migrationRule,
+      'no-useless-catch': migrationRule,
+      'no-useless-escape': migrationRule,
+      'prefer-const': migrationRule,
+    },
+  },
+  ]);
+}
+
+export default createEslintConfig(ESLINT_MODE.DEVELOP);
 
 // Storybook намеренно не подключён в shared config:
 // eslint-plugin-storybook должен оставаться в eslint.config.js конкретного проекта,
