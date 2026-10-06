@@ -210,6 +210,10 @@ export default defineConfig([
       '@typescript-eslint': typescriptEslint.plugin,
     },
     rules: {
+      // Сохраняем поведение старого shared config: эти проверки были отключены и для .vue.
+      'no-undef': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+
       "vue/multi-word-component-names": "off", // Отключаем правило, если имена компонентов из одного слова допустимы
       //
       // https://github.com/vuejs/eslint-plugin-vue/blob/master/lib/rules/order-in-components.js
