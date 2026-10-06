@@ -1,9 +1,13 @@
 //
+import { defineConfig } from 'eslint/config';
 import eslintPluginJs from '@eslint/js';
 // import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
-import typescriptEslint from 'typescript-eslint';
+import {
+  configs as typescriptEslintConfigs,
+  parser as typescriptEslintParser,
+} from 'typescript-eslint';
 
 // export default [
 //   // Базовые настройки для игнорирования файлов
@@ -65,12 +69,12 @@ import typescriptEslint from 'typescript-eslint';
 //   },
 // ];
 
-export default typescriptEslint.config(
+export default defineConfig([
   { ignores: ['*.d.ts', '**/coverage', '**/dist'] },
   {
     extends: [
       eslintPluginJs.configs.recommended,
-      ...typescriptEslint.configs.recommended,
+      typescriptEslintConfigs.recommended,
       ...eslintPluginVue.configs['flat/recommended'],
     ],
     files: ['**/*.{ts,vue}'],
@@ -79,7 +83,7 @@ export default typescriptEslint.config(
       sourceType: 'module',
       globals: globals.browser,
       parserOptions: {
-        parser: typescriptEslint.parser,
+        parser: typescriptEslintParser,
       },
     },
     rules: {
@@ -89,4 +93,4 @@ export default typescriptEslint.config(
     },
   },
   // eslintConfigPrettier,
-);
+]);
