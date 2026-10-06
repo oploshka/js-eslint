@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-oploshka",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "description": "Shared ESLint 10 flat config for Vue and TypeScript projects",
   "type": "module",
   "main": "index.js",
